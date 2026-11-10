@@ -1,0 +1,49 @@
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+server {
+    listen ${PORT};
+    server_tokens off;
+    tcp_nodelay on;
+    client_max_body_size 0;
+    access_log off;
+    error_log /dev/stderr warn;
+
+    # Health check
+    location = /health {
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # V2Ray/Xray WebSocket (any protocol)
+    location /vray {
+        proxy_pass http://${VPS_HOST}:${V2RAY_PORT};
+        include /etc/nginx/ws-proxy.conf;
+    }
+
+    # VLESS WebSocket
+    location /vless {
+        proxy_pass http://${VPS_HOST}:${VLESS_PORT};
+        include /etc/nginx/ws-proxy.conf;
+    }
+
+    # VMess WebSocket
+    location /vmess {
+        proxy_pass http://${VPS_HOST}:${VMESS_PORT};
+        include /etc/nginx/ws-proxy.conf;
+    }
+
+    # Trojan WebSocket
+    location /trojan {
+        proxy_pass http://${VPS_HOST}:${TROJAN_PORT};
+        include /etc/nginx/ws-proxy.conf;
+    }
+
+    # SSH over WebSocket (everything else)
+    location / {
+        proxy_pass http://${VPS_HOST}:${SSH_WS_PORT};
+        include /etc/nginx/ws-proxy.conf;
+    }
+}
