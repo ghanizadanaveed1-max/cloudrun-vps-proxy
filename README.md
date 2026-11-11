@@ -15,13 +15,17 @@ Nginx reverse proxy on Cloud Run that forwards WebSocket traffic to your VPS (21
 Replace `REPO` with your GitHub repo name, then paste in Cloud Shell:
 
 ```bash
-rm -rf REPO && \
-git clone https://github.com/ghanizadanaveed1-max/REPO.git && \
-cd REPO && \
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com && \
+
+rm -rf cloudrun-vps-proxy && \
+git clone https://github.com/ghanizadanaveed1-max/cloudrun-vps-proxy.git && \
+cd cloudrun-vps-proxy && \
+gcloud services enable \
+  run.googleapis.com \
+  cloudbuild.googleapis.com \
+  artifactregistry.googleapis.com && \
 gcloud run deploy vps-proxy \
   --source . \
-  --region us-central1 \
+  --region us-east1 \
   --platform managed \
   --allow-unauthenticated \
   --port 8080 \
@@ -33,7 +37,8 @@ gcloud run deploy vps-proxy \
   --timeout 3600 \
   --cpu-boost \
   --session-affinity \
-  --set-env-vars VPS_HOST=217.60.6.102,SSH_WS_PORT=80,V2RAY_PORT=8080,VLESS_PORT=8081,VMESS_PORT=8082,TROJAN_PORT=8083
+  --set-env-vars="VPS_HOST=217.60.6.102,SSH_WS_PORT=80,V2RAY_PORT=8080,VLESS_PORT=8081,VMESS_PORT=8082,TROJAN_PORT=8083"
+8083
 ```
 
 ## One-click script (prints client settings at the end)
